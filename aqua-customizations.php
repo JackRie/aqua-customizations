@@ -19,7 +19,7 @@ require_once AQUA_DIR . './includes/classes/class-wps-extend-plugin.php';
 // Extend WooCommerce Warranty
 new WPS_Extend_Plugin( 'woocommerce-warranty/woocommerce-warranty.php', __FILE__, '1.9', 'aqua' );
 
-// Add the below line to class-warranty-coupons.php in woocommerce-warranty plugin
+// Add the below line to class-warranty-coupons.php to line 63 in woocommerce-warranty plugin
 // apply_filters('after_warranty_create_coupon', $coupon_id, $order_id, $warranty_id);
 
 class AquaCustomizations {

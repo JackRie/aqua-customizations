@@ -4,7 +4,7 @@
  * Description: Plugin that extends WordPress for Aqua's Integration needs.
  * Version: 1.0
  * Author: Jackie
- * Author URI: https://github.com/JackRie
+ * Author URI: https://github.com/JackRie/aqua-customizations
  * Text Domain: aqua
  */
 

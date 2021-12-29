@@ -19,6 +19,9 @@ require_once AQUA_DIR . './includes/classes/class-wps-extend-plugin.php';
 // Extend WooCommerce Warranty
 new WPS_Extend_Plugin( 'woocommerce-warranty/woocommerce-warranty.php', __FILE__, '1.9', 'aqua' );
 
+// Add the below line to class-warranty-coupons.php in woocommerce-warranty plugin
+// apply_filters('after_warranty_create_coupon', $coupon_id, $order_id, $warranty_id);
+
 class AquaCustomizations {
 
     function __construct() {
@@ -28,6 +31,8 @@ class AquaCustomizations {
         add_action( 'admin_menu', array( $this, 'add_custom_settings_page_to_warranties' ), 20 );
         add_action('rest_api_init', array($this, 'returns_rest_route'));
         add_action('wc_warranty_status_updated', array($this, 'aqua_get_return_info'), 10, 3);
+        add_filter( 'after_warranty_create_coupon', array($this, 'add_custom_data_to_coupon_data'), 10, 3 );
+        add_action( 'woocommerce_coupon_options', array($this, 'add_coupon_text_field'), 10 );
     }
 
     /**
@@ -238,6 +243,34 @@ class AquaCustomizations {
          
         $message = $mailer->wrap_message( $subject, $message );
         $mailer->send( $customer_email, $subject, $message );
+    }
+
+    // Add Post Meta Inputs On Coupons
+    function add_coupon_text_field() {
+        woocommerce_wp_text_input( array(
+            'id'                => 'original_order_id',
+            'label'             => __( 'Original Order Id (If Coupon From Return)', 'woocommerce' ),
+            'placeholder'       => '',
+            'description'       => __( 'Original Order Id (If Coupon From Return)', 'woocommerce' ),
+            'desc_tip'    => true,
+        ) );
+        woocommerce_wp_text_input( array(
+            'id'                => 'rma_number',
+            'label'             => __( 'RMA Number (If Coupon From Return', 'woocommerce' ),
+            'placeholder'       => '',
+            'description'       => __( 'RMA Number (If Coupon From Return', 'woocommerce' ),
+            'desc_tip'    => true,
+        ) );
+    }
+    // Get Warranty, Order, and Coupon IDs from coupon creation in woocommerce warranty plugin
+    function add_custom_data_to_coupon_data($coupon_id, $order_id, $warranty_id) {
+
+        $order = wc_get_order( $order_id );
+        $order_data = $order->get_data();
+        $rma_number   = get_post_meta( $warranty_id, '_code', true );
+
+        update_post_meta( $coupon_id, 'original_order_id', $order_data['number'] );
+        update_post_meta( $coupon_id, 'rma_number', $rma_number );
     }
 
 }

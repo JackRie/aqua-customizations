@@ -14,8 +14,6 @@ define( 'AQUA_DIR', dirname(__FILE__).'/' );
 
 require_once AQUA_DIR . './includes/classes/class-wps-extend-plugin.php';
 
-require_once AQUA_DIR . './includes/classes/class-wps-extend-plugin.php';
-
 // Extend WooCommerce Warranty
 new WPS_Extend_Plugin( 'woocommerce-warranty/woocommerce-warranty.php', __FILE__, '1.9', 'aqua' );
 
@@ -212,6 +210,7 @@ class AquaCustomizations {
     }
     
     //Leverage warranty_update_request function (in WooCommerce Warranty Requests plugin) to update status and tracking number
+    // Build our own custom email to send tracking to customer
     function create_return_update( WP_REST_Request $request ) {
         $request_id = $request['id'];
         $data = $request['data'];

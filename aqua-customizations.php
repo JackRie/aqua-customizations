@@ -90,6 +90,8 @@ class AquaCustomizations {
         add_settings_section( 'aqua-api-section', "API Settings", null, 'warranties-custom' );
         add_settings_field('aqua-api-call', 'Jitterbit API URL', array($this, 'textInputHtml'), 'warranties-custom', 'aqua-api-section', array('name' => 'aqua-api-call'));
         register_setting('aqua', 'aqua-api-call', array('sanitize_callback' => 'sanitize_text_field', 'default' => NULL));
+        add_settings_field('aqua-cookies', 'API Header Cookie', array($this, 'textInputHtml'), 'warranties-custom', 'aqua-api-section', array('name' => 'aqua-cookies'));
+        register_setting('aqua', 'aqua-cookies', array('sanitize_callback' => 'sanitize_text_field', 'default' => NULL));
     }
 
     // Callback for Text Input HTML
@@ -120,7 +122,7 @@ class AquaCustomizations {
         $request = new WP_Http();
         $response = $request->post($url, array(
             'headers' => array(
-                'Cookie' => '_ga=GA1.2.1569990160.1634151587; XSRF-TOKEN=eyJpdiI6IlFLMmM3VUVDdVZPbktJZG9uckY1Wnc9PSIsInZhbHVlIjoiUGY5M2g2R1Q4NTBERldrMldJUUJNSmFuMTZhVXpcL1daY0UyYjZKXC9yYzQwVkZobVJRSVpvXC9NQklyZmpjOU5xOCIsIm1hYyI6IjdhOWYzMTk3OGU3NWY3ZDU4YzAxODhkZDg3MzliZWNlNGI3M2M0MWMwZDdiZjc0YjkxNmU3ZTRhMjIwOGQwNzQifQ%3D%3D; laravel_session=IhOtmOFF1w41TPoBsxXBnByC24wVgMCEcja9djv9; io=Bj_aV_IqJ3dZm7-uEmVw; _gid=GA1.2.1770087368.1639495630; _gat=1',
+                'Cookie' => get_option('aqua-cookies'),
             ),
             'body'    => $body
         ));

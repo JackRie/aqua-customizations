@@ -26,7 +26,6 @@ class AquaCustomizations {
         add_action( 'init', array($this, 'add_custom_order_status') );
         add_filter('wc_order_statuses', array($this, 'add_custom_status_to_order_statuses') );
         add_action( 'init', array($this, 'warranty_add_custom_statuses'), 30 );
-        add_action( 'admin_menu', array( $this, 'add_custom_settings_page_to_warranties' ), 20 );
         add_action('rest_api_init', array($this, 'returns_rest_route'));
         add_action('wc_warranty_status_updated', array($this, 'aqua_get_return_info'), 10, 3);
         add_filter( 'after_warranty_create_coupon', array($this, 'add_custom_data_to_coupon_data'), 10, 3 );
@@ -84,50 +83,6 @@ class AquaCustomizations {
         }
     }
 
-    // Add Custom Settings Page As Submenu Under Warranties Plugin
-    function add_custom_settings_page_to_warranties() {
-        add_submenu_page( 'warranties', __( 'Custom Settings', 'wc_warranty' ), __( 'Custom Settings', 'wc_warranty' ), 'manage_warranties', 'warranties-custom', array($this, 'warranty_custom_settings'), 6 );
-        add_settings_section( 'aqua-api-section', "API Settings", null, 'warranties-custom' );
-        add_settings_field('aqua-api-call', 'Jitterbit API URL', array($this, 'textInputHtml'), 'warranties-custom', 'aqua-api-section', array('name' => 'aqua-api-call'));
-        register_setting('aqua', 'aqua-api-call', array('sanitize_callback' => 'sanitize_text_field', 'default' => NULL));
-        add_settings_field('aqua-cookies', 'API Header Cookie', array($this, 'textInputHtml'), 'warranties-custom', 'aqua-api-section', array('name' => 'aqua-cookies'));
-        register_setting('aqua', 'aqua-cookies', array('sanitize_callback' => 'sanitize_text_field', 'default' => NULL));
-    }
-
-    // Callback for Text Input HTML
-    function textInputHtml($args) { ?>
-        <input type="text" name="<?php echo $args['name']?>" value="<?php echo esc_attr(get_option($args['name']));?>">
-    <?php
-    }
-
-    // Custom Setting Page HTML
-    function warranty_custom_settings() { ?>
-        <div class="wrap">
-            <h2><?php _e("Aqua's Custom Settings") ?></h2>
-            <h3>Use the fields below to set up creditials for Jitterbit API Call.</h3>
-            <form action="options.php" method="POST">
-                <?php 
-                settings_fields('aqua');
-                do_settings_sections('warranties-custom'); 
-                submit_button();
-                ?>
-            </form>
-        </div>
-    <?php
-    }
-
-    // API Call for Our Send Return To Jitterbit Status
-    function aqua_send_return_to_jitterbit($body) {
-        $url = get_option('aqua-api-call');
-        $request = new WP_Http();
-        $response = $request->post($url, array(
-            'headers' => array(
-                'Cookie' => get_option('aqua-cookies'),
-            ),
-            'body'    => $body
-        ));
-    }
-
     // Helper Function for Formatting Products on Return For JSON
     function aqua_get_return_items($warranty_id) {
         global $wpdb;
@@ -183,13 +138,10 @@ class AquaCustomizations {
                 'order_number' => $order_number,
                 'products'     => $this->aqua_get_return_items($warranty_id)
             );
-            // JSON Encode Return Data for API Call
-            $body = json_encode( $return );
     
             // error_log(print_r($return, true));
-    
-            // Pass Body to API Call Function
-            $this->aqua_send_return_to_jitterbit( $body );
+            // Create Custom Action To Use In WooCom Webhooks
+            do_action('wc_aqua_send_return_to_syteline', $return);
         }
         
     }

@@ -127,19 +127,19 @@ class AquaCustomizations {
             $order_data = $order->get_data();
             // Setup Variables to Use In Response Body
             $rma_number   = get_post_meta( $warranty_id, '_code', true );
-            $reason       = get_post_meta( $warranty_id, '_field_1199171998', true );
+            $reason       = get_post_meta( $warranty_id, '_field_2043213277', true );
+            $request_type = get_post_meta( $warranty_id, '_request_type', true );
             $order_number = $order_data['number'];
             // Setup Return Array For Response Body
             $return = array(
                 'rma_id'       => $warranty_id,
                 'rma_date'     => current_time( 'mysql' ),
                 'rma_number'   => $rma_number,
+                'request_type' => $request_type,
                 'reason'       => $reason,
                 'order_number' => $order_number,
                 'products'     => $this->aqua_get_return_items($warranty_id)
             );
-    
-            // error_log(print_r($return, true));
             // Create Custom Action To Use In WooCom Webhooks
             do_action('wc_aqua_send_return_to_syteline', $return);
         }

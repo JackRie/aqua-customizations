@@ -21,8 +21,8 @@ class AquaCustomizations {
         add_filter( 'wc_order_statuses', array( $this, 'add_custom_status_to_order_statuses' ) );
         add_action( 'init', array( $this, 'warranty_add_custom_statuses' ), 30 );
         add_action('wc_warranty_status_updated', array( $this, 'aqua_get_return_info' ), 10, 3);
-		add_action( 'rest_api_init', array( $this, 'returns_rest_route' ) );
-		add_filter( 'after_warranty_create_coupon', array( $this, 'add_custom_data_to_coupon_data' ), 10, 3 );
+	add_action( 'rest_api_init', array( $this, 'returns_rest_route' ) );
+	add_filter( 'after_warranty_create_coupon', array( $this, 'add_custom_data_to_coupon_data' ), 10, 3 );
         add_action( 'woocommerce_coupon_options', array( $this, 'add_coupon_text_field' ), 10 );
     }
 
